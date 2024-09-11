@@ -143,7 +143,7 @@ def parkinson_input_parameters():
         st.write('Signal Fractal Scaling Exponent / Fundamental Freq Variation:')
         col1, col2 = st.columns(2)
         dfa = col1.number_input('DFA', min_value=0.5, max_value=0.9, value=0.72)
-        spread1 = col2.number_input('Spread1', min_value=-7.0, max_value=-2.0, value=-5.5)
+        spread1 = col2.number_input('Spread1', min_value=-8.0, max_value=-2.0, value=-5.5)
         spread2 = col1.number_input('Spread2', min_value=0.006, max_value=0.5, value=0.22)
         ppe = col2.number_input('PPE', min_value=0.04, max_value=0.6, value=0.2)
 
@@ -174,6 +174,41 @@ def parkinson_input_parameters():
         return input_dict
 
 
+# Function to display the model prediction and probability
+def display_prediction(prediction, probability, selection):
+    st.subheader("Prediction")
+    if prediction[0] == 0:
+        prob = "{:.3f}".format(probability[0][0])
+        st.success(f"{selection} Disease: NO")
+    else:
+        prob = "{:.3f}".format(probability[0][0])
+        st.error(f"{selection} Disease: YES")
+
+    st.info('*Disclaimer: This application is for information purpose only and should not be considered as medical '
+            'advice or a conclusive diagnosis. Always consult a qualified healthcare professional for an accurate '
+            'diagnosis and personalized medical advice.*')
+
+
+# Function to display the footer
+def display_performance_metrics(df_performance_metric):
+    accuracy_col, f1_score_col, precision_col, recall_col, roc_auc_score_col = st.columns(5)
+    with accuracy_col:
+        with st.container(border=True):
+            st.metric('*Accuracy*', value=df_performance_metric['Accuracy'].iloc[0])
+    with f1_score_col:
+        with st.container(border=True):
+            st.metric('*F1 Score*', value=float(df_performance_metric['F1 Score'].iloc[0]))
+    with precision_col:
+        with st.container(border=True):
+            st.metric('*Precision*', value=float(df_performance_metric['Precision'].iloc[0]))
+    with recall_col:
+        with st.container(border=True):
+            st.metric('*Recall*', value=float(df_performance_metric['Recall'].iloc[0]))
+    with roc_auc_score_col:
+        with st.container(border=True):
+            st.metric('*ROC AUC Score*', value=float(df_performance_metric['ROC AUC Score'].iloc[0]))
+
+
 def about_app():
     st.subheader('About')
     with st.expander('Application'):
@@ -202,5 +237,26 @@ def about_app():
     with st.expander('Contact'):
         st.markdown(''' Any Queries: Contact [Zeeshan Altaf](mailto:zeeshan.altaf@92labs.ai)''')
     with st.expander('Source Code'):
-        st.markdown(''' Source code: [GitHub](https://github.com/mzeeshanaltaf/)''')
+        st.markdown(''' Source code: [GitHub](https://github.com/mzeeshanaltaf/ml-multiple-disease-predictor)''')
 
+
+def display_footer():
+    footer = """
+        <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: transparent;
+            text-align: center;
+            color: grey;
+            padding: 10px 0;
+        }
+        </style>
+        <div class="footer">
+            Made with ❤️ by <a href="mailto:zeeshan.altaf@92labs.ai">Zeeshan</a>.
+            Source code <a href='https://github.com/mzeeshanaltaf/ml-multiple-disease-predictor'>here</a>.</div> 
+        </div>
+    """
+    st.markdown(footer, unsafe_allow_html=True)

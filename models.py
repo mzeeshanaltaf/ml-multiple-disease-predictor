@@ -62,7 +62,7 @@ def get_parkinson_disease_data():
 def train_model(model_name, disease):
     # Available models
     models = {
-        "Support Vector Machines": svm.SVC(kernel='linear'),
+        "Support Vector Machines": svm.SVC(kernel='linear', probability=True),
         "Logistic Regression": LogisticRegression(),
         "Decision Tree": DecisionTreeClassifier(),
         "Random Forest": RandomForestClassifier(),
@@ -126,7 +126,7 @@ def train_model(model_name, disease):
     return model, scaler, df_performance_metric
 
 
-# Function to predict outcome given the input data nad based on trained machine learning model
+# Function to predict outcome given the input data and based on trained machine learning model
 def model_predictions(input_data, model, scaler):
     # Convert the input data into a 2D array. This is required for machine learning model
     input_array = np.array(list(input_data.values())).reshape(1, -1)
