@@ -41,6 +41,7 @@ selection = option_menu(
     options=["Diabetes", "Heart", "Parkinson", 'Liver', 'Kidney'],
     icons=["bi-activity", "bi-heart", "bi-person-wheelchair", "bi-file-medical", "bi-prescription"],
     orientation="horizontal",
+    default_index=1,
 )
 
 # If selection is Diabetes
