@@ -1,20 +1,90 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score,
-                             roc_auc_score)
+                             roc_auc_score, confusion_matrix)
+from util import *
 
 
 # This function reads the data from csv file and returns the cleaned after pre-processing
 def get_heart_disease_data():
     # Read the data from csv file
     data = pd.read_csv('heart_disease_data.csv')
+
+    return data
+
+
+# This function reads the data from csv file and returns the cleaned after pre-processing
+def get_kidney_disease_data():
+    # Read the data from csv file
+    data = pd.read_csv('kidney_disease.csv')
+
+    # Drop ID columns
+    data = data.drop(columns=['id'])
+
+    # Replace both '\t' and '\t?' characters with an empty string across the entire DataFrame
+    data = data.replace(r'\t\??', '', regex=True)
+
+    # Replace the values in classification column. 1 reflects kidney disease and 0 reflects no kidney disease
+    data['classification'] = data['classification'].replace('ckd', 1)
+    data['classification'] = data['classification'].replace('notckd', 0)
+
+    # Remove extra spaces
+    data['dm'] = data['dm'].str.strip()
+
+    # Convert the columns to numeric
+    col_object_to_numeric = ['pcv', 'wc', 'rc']
+    for col in col_object_to_numeric:
+        data[col] = pd.to_numeric(data[col], errors='coerce')
+
+    # Extracting categorical and numerical columns
+    cat_cols = [col for col in data.columns if data[col].dtype == 'O']
+    num_cols = [col for col in data.columns if data[col].dtype != 'O']
+
+    # Imputing Numerical Columns
+    # We will impute 'age' and 'bp' with mean value and rest of the numerical columns with random sampling
+    data = impute_mean(data, 'age')
+    data = impute_mean(data, 'bp')
+    for col in num_cols:
+        data = random_value_imputation(data, col)
+
+    # Imputing Categorical Columns
+    # We will impute 'rbc' and 'pc' with mode value and rest of the categorical columns with random sampling
+    data = random_value_imputation(data, 'rbc')
+    data = random_value_imputation(data, 'pc')
+    for col in cat_cols:
+        data = impute_mode(data, col)
+
+    # Converting Categorical features using Label Encoder
+    le = LabelEncoder()
+    for col in cat_cols:
+        data[col] = le.fit_transform(data[col])
+
+    return data
+
+
+# This function reads the data from csv file and returns the cleaned after pre-processing
+def get_liver_disease_data():
+    # Read the data from csv file
+    data = pd.read_csv('liver_data.csv')
+
+    data['Dataset'] = data['Dataset'].replace(2, 0)
+
+    # Impute the column with missing values with mean value
+    mean_data = data['Albumin_and_Globulin_Ratio'].mean()
+    data['Albumin_and_Globulin_Ratio'] = data['Albumin_and_Globulin_Ratio'].fillna(mean_data)
+
+    # Convert categorical features using Label Encoder
+    le = LabelEncoder()
+    data['Gender'] = le.fit_transform(data['Gender'])
 
     return data
 
@@ -64,6 +134,7 @@ def train_model(model_name, disease):
     models = {
         "Support Vector Machines": svm.SVC(kernel='linear', probability=True),
         "Logistic Regression": LogisticRegression(),
+        "K-Nearest Neighbor": KNeighborsClassifier(n_neighbors=5),
         "Decision Tree": DecisionTreeClassifier(),
         "Random Forest": RandomForestClassifier(),
         "Gaussian NB": GaussianNB()
@@ -92,6 +163,22 @@ def train_model(model_name, disease):
         # Get the dependent and independent features
         X = data.drop(['status'], axis=1)
         y = data['status']
+
+    elif disease == "Liver":
+        # Get the data
+        data = get_liver_disease_data()
+
+        # Get the dependent and independent features
+        X = data.drop(['Dataset'], axis=1)
+        y = data['Dataset']
+
+    elif disease == "Kidney":
+        # Get the data
+        data = get_kidney_disease_data()
+
+        # Get the dependent and independent features
+        X = data.drop(['classification'], axis=1)
+        y = data['classification']
 
     # Split the data to training and test set
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -123,7 +210,10 @@ def train_model(model_name, disease):
     df_performance_metric.loc[0, 'Recall'] = "{:.2f}".format(recall_score(y_test, y_pred))
     df_performance_metric.loc[0, 'ROC AUC Score'] = "{:.2f}".format(roc_auc_score(y_test, y_pred))
 
-    return model, scaler, df_performance_metric
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    return model, scaler, df_performance_metric, cm
 
 
 # Function to predict outcome given the input data and based on trained machine learning model

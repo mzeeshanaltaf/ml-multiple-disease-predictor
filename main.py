@@ -3,7 +3,13 @@ from streamlit_option_menu import option_menu
 from util import *
 from models import *
 
-supported_models = ["Logistic Regression", "Support Vector Machines", "Decision Tree", "Random Forest", "Gaussian NB"]
+# Define session state variables
+if "model_name" not in st.session_state:
+    st.session_state.model_name = None
+
+# List of supported Machine Learning Models
+supported_models = ["Logistic Regression", "Support Vector Machines", 'K-Nearest Neighbor', "Decision Tree",
+                    "Random Forest", "Gaussian NB"]
 
 # Initialize streamlit app
 page_title = "Multiple Disease Predictor"
@@ -17,13 +23,23 @@ st.write(':blue[***Predict your health, one click at a time! 🩺🔮***]')
 st.write("The Multiple Disease Predictor app helps you assess your risk for conditions like Diabetes, Heart Disease, "
          "or Parkinson. Simply select a disease, provide some basic health data, and get a quick, accurate prediction "
          "on your condition. Stay ahead of your health with cutting-edge AI! 🩺📊💡")
-st.info('Dataset for the diseases taken from Kaggle. Check the About section for link.', icon='ℹ️')
+st.info('Dataset for the diseases taken from Kaggle. Check the About section in the sidebar for links.', icon='ℹ️')
+
+# Configure sidebar
+with st.sidebar:
+    # Model selection option
+    st.subheader('Select Machine Learning Model')
+    st.session_state.model_name = st.selectbox('Select the Model', supported_models, label_visibility="collapsed")
+
+    # About section
+    about_app()
+
 # ---- NAVIGATION MENU -----
 selection = option_menu(
     menu_title="Select Disease",
     menu_icon="bi-check2-square",
-    options=["Diabetes", "Heart", "Parkinson", "About"],
-    icons=["bi-activity", "bi-heart", "bi-person-wheelchair", "app"],  # https://icons.getbootstrap.com
+    options=["Diabetes", "Heart", "Parkinson", 'Liver', 'Kidney'],
+    icons=["bi-activity", "bi-heart", "bi-person-wheelchair", "bi-file-medical", "bi-prescription"],
     orientation="horizontal",
 )
 
@@ -34,18 +50,16 @@ if selection == "Diabetes":
     with st.expander('User Input', expanded=True, icon=':material/settings_input_component:'):
         input_data = diabetes_input_parameters()
 
-    # Model selection
-    st.subheader('Select ML Model')
-    model_name = st.selectbox('Select the Model', supported_models, label_visibility="collapsed")
-
     # Train the model and get prediction and probability of outcome
-    model, scalar, df_performance_metric = train_model(model_name, selection)
+    model, scalar, df_performance_metric, cm = train_model(st.session_state.model_name, selection)
     prediction, probability = model_predictions(input_data, model, scalar)
     display_prediction(prediction, probability, selection)
 
     # Display performance metrics
-    st.subheader('Performance Metrics')
     display_performance_metrics(df_performance_metric)
+
+    # Display Confusion Matrix
+    display_confusion_matrix(cm)
 
 # If selection is Heart
 if selection == "Heart":
@@ -54,18 +68,16 @@ if selection == "Heart":
     with st.expander('User Input', expanded=True, icon=':material/settings_input_component:'):
         input_data = heart_input_parameters()
 
-    # Model selection
-    st.subheader('Select ML Model')
-    model_name = st.selectbox('Select the Model', supported_models, label_visibility="collapsed")
-
     # Train the model and get prediction and probability of outcome
-    model, scalar, df_performance_metric = train_model(model_name, selection)
+    model, scalar, df_performance_metric, cm = train_model(st.session_state.model_name, selection)
     prediction, probability = model_predictions(input_data, model, scalar)
     display_prediction(prediction, probability, selection)
 
     # Display performance metrics
-    st.subheader('Performance Metrics')
     display_performance_metrics(df_performance_metric)
+
+    # Display Confusion Matrix
+    display_confusion_matrix(cm)
 
 # If selection is Parkinson
 if selection == "Parkinson":
@@ -74,21 +86,55 @@ if selection == "Parkinson":
     with st.expander('User Input', expanded=True, icon=':material/settings_input_component:'):
         input_data = parkinson_input_parameters()
 
-    # Model selection
-    st.subheader('Select ML Model')
-    model_name = st.selectbox('Select the Model', supported_models, label_visibility="collapsed")
-
     # Train the model and get prediction and probability of outcome
-    model, scalar, df_performance_metric = train_model(model_name, selection)
+    model, scalar, df_performance_metric, cm = train_model(st.session_state.model_name, selection)
     prediction, probability = model_predictions(input_data, model, scalar)
     display_prediction(prediction, probability, selection)
 
     # Display performance metrics
-    st.subheader('Performance Metrics')
     display_performance_metrics(df_performance_metric)
 
-# If selection is About
-if selection == "About":
-    about_app()
+    # Display Confusion Matrix
+    display_confusion_matrix(cm)
 
+# If selection is Parkinson
+if selection == "Liver":
+    # Input Parameters
+    st.subheader('Input Parameters')
+    with st.expander('User Input', expanded=True, icon=':material/settings_input_component:'):
+        input_data = liver_input_parameters()
+
+    # Train the model and get prediction and probability of outcome
+    model, scalar, df_performance_metric, cm = train_model(st.session_state.model_name, selection)
+    prediction, probability = model_predictions(input_data, model, scalar)
+    display_prediction(prediction, probability, selection)
+
+    # Display performance metrics
+    display_performance_metrics(df_performance_metric)
+
+    # Display Confusion Matrix
+    display_confusion_matrix(cm)
+
+# If selection is Parkinson
+if selection == "Kidney":
+    # Input Parameters
+    st.subheader('Input Parameters')
+    with st.expander('User Input', expanded=True, icon=':material/settings_input_component:'):
+        input_data = kidney_input_parameters()
+
+    # Train the model and get prediction and probability of outcome
+    model, scalar, df_performance_metric, cm = train_model(st.session_state.model_name, selection)
+    prediction, probability = model_predictions(input_data, model, scalar)
+    display_prediction(prediction, probability, selection)
+
+    # Display performance metrics
+    display_performance_metrics(df_performance_metric)
+
+    # Display Confusion Matrix
+    display_confusion_matrix(cm)
+
+# Display disclaimer
+display_disclaimer()
+
+# Display footer
 display_footer()
