@@ -3,7 +3,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
@@ -136,7 +137,10 @@ def train_model(model_name, disease):
         "K-Nearest Neighbor": KNeighborsClassifier(n_neighbors=5),
         "Decision Tree": DecisionTreeClassifier(),
         "Random Forest": RandomForestClassifier(),
-        "Gaussian NB": GaussianNB()
+        "AdaBoost": AdaBoostClassifier(),
+        "Gradient Boost": GradientBoostingClassifier(),
+        "XGBoost": XGBClassifier(),
+        "Gaussian NB": GaussianNB(),
 
     }
     if disease == "Diabetes":

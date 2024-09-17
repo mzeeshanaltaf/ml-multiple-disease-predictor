@@ -9,7 +9,7 @@ if "model_name" not in st.session_state:
 
 # List of supported Machine Learning Models
 supported_models = ["Logistic Regression", "Support Vector Machines", 'K-Nearest Neighbor', "Decision Tree",
-                    "Random Forest", "Gaussian NB"]
+                    "Random Forest", 'AdaBoost', 'Gradient Boost', 'XGBoost', "Gaussian NB"]
 
 # Initialize streamlit app
 page_title = "Multiple Disease Predictor"
