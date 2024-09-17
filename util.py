@@ -56,12 +56,14 @@ def liver_input_parameters():
     with st.container(border=True):
         col1, col2 = st.columns(2)
         alkaline_phosphatase = col1.number_input('Alkaline Phosphatase (IU/L)', min_value=40, max_value=900, value=100)
-        alanine_aminotransferase = col2.number_input('Alanine Aminotransferase (IU/L)', min_value=5, max_value=1000, value=35)
+        alanine_aminotransferase = col2.number_input('Alanine Aminotransferase (IU/L)', min_value=5, max_value=1000,
+                                                     value=35)
 
     with st.container(border=True):
         col1, col2 = st.columns(2)
-        aspartate_aminotransferase = col1.number_input('Aspartate Aminotransferase (IU/L)', min_value=10, max_value=1000,
-                                                 value=50)
+        aspartate_aminotransferase = col1.number_input('Aspartate Aminotransferase (IU/L)', min_value=10,
+                                                       max_value=1000,
+                                                       value=50)
         total_proteins = col2.number_input('Total Proteins (g/dL)', min_value=2.7, max_value=9.6, value=7.0)
 
     with st.container(border=True):
@@ -103,7 +105,7 @@ def kidney_input_parameters():
     with st.container(border=True):
         col1, col2 = st.columns(2)
         age = col1.slider('Age (Years)', min_value=2, max_value=90, value=40)
-        blood_pressure = col2.number_input('Blood Pressure', min_value=50.0, max_value=180.0, value=76.0)
+        blood_pressure = col2.number_input('Blood Pressure (mm/Hg)', min_value=50.0, max_value=180.0, value=76.0)
     with st.container(border=True):
         col1, col2, col3 = st.columns(3)
         specific_gravity = col1.number_input('Specific Gravity', min_value=1.005, max_value=1.025, value=1.015)
@@ -117,19 +119,22 @@ def kidney_input_parameters():
         bacteria = col4.selectbox('Bacteria', ('Not Present', 'Present'))
     with st.container(border=True):
         col1, col2, col3 = st.columns(3)
-        blood_glucose_random = col1.number_input('Blood Glucose Random', min_value=22.0, max_value=500.0, value=150.0)
-        blood_urea = col2.number_input('Blood Urea', min_value=1.5, max_value=400.0, value=57.5)
-        serum_creatinine = col3.number_input('Serum Creatinine', min_value=0.4, max_value=76.0, value=3.0)
+        blood_glucose_random = col1.number_input('Blood Glucose Random (mgs/dl)', min_value=22.0, max_value=500.0,
+                                                 value=150.0)
+        blood_urea = col2.number_input('Blood Urea (mgs/dl)', min_value=1.5, max_value=400.0, value=57.5)
+        serum_creatinine = col3.number_input('Serum Creatinine (mgs/dl)', min_value=0.4, max_value=76.0, value=3.0)
     with st.container(border=True):
         col1, col2, col3 = st.columns(3)
-        sodium = col1.number_input('Sodium', min_value=4.5, max_value=165.0, value=137.0)
-        potassium = col2.number_input('Potassium', min_value=2.5, max_value=47.0, value=4.5)
-        haemoglobin = col3.number_input('Haemoglobin', min_value=3.0, max_value=18.0, value=12.5)
+        sodium = col1.number_input('Sodium (mEq/L)', min_value=4.5, max_value=165.0, value=137.0)
+        potassium = col2.number_input('Potassium (mEq/L)', min_value=2.5, max_value=47.0, value=4.5)
+        haemoglobin = col3.number_input('Haemoglobin (g)', min_value=3.0, max_value=18.0, value=12.5)
     with st.container(border=True):
         col1, col2, col3 = st.columns(3)
         packed_cell_volume = col1.number_input('Packed Cell Volume', min_value=9.0, max_value=54.0, value=35.0)
-        white_blood_cell_count = col2.number_input('White Blood Cell Count', min_value=2200.0, max_value=27000.0, value=9000.0)
-        red_blood_cell_count = col3.number_input('Red Blood Cell Count', min_value=2.0, max_value=8.0, value=4.5)
+        white_blood_cell_count = col2.number_input('White Blood Cell Count (cells/cumm)', min_value=2200.0,
+                                                   max_value=27000.0, value=9000.0)
+        red_blood_cell_count = col3.number_input('Red Blood Cell Count (millions/cmm)', min_value=2.0, max_value=8.0,
+                                                 value=4.5)
     with st.container(border=True):
         col1, col2, col3 = st.columns(3)
         hypertension = col1.selectbox('hypertension', ('No', 'Yes'))
@@ -358,8 +363,8 @@ def display_confusion_matrix(cm):
 def display_disclaimer():
     st.subheader('Disclaimer')
     st.info('*This application is for information purpose only and should not be considered as medical '
-            'advice or a conclusive diagnosis. Always consult a qualified healthcare professional for an accurate '
-            'diagnosis and personalized medical advice.*')
+            'advice or a conclusive diagnosis. Always consult a qualified healthcare professional for an '
+            'accurate diagnosis and personalized medical advice.*')
 
 
 def about_app():
@@ -386,6 +391,8 @@ def about_app():
         * [Diabetes Disease](https://www.kaggle.com/datasets/mathchi/diabetes-data-set)
         * [Heart Disease](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
         * [Parkinson Disease](https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set)
+        * [Liver Disease](https://www.kaggle.com/datasets/uciml/indian-liver-patient-records/data)
+        * [Kidney Disease](https://www.kaggle.com/datasets/mansoordaku/ckdisease/data)
         ''')
     with st.expander('Contact'):
         st.markdown(''' Any Queries: Contact [Zeeshan Altaf](mailto:zeeshan.altaf@92labs.ai)''')
@@ -414,21 +421,25 @@ def impute_mean(df, feature):
 
 def display_footer():
     footer = """
-        <style>
-        .footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: transparent;
-            text-align: center;
-            color: grey;
-            padding: 10px 0;
-        }
-        </style>
-        <div class="footer">
-            Made with ❤️ by <a href="mailto:zeeshan.altaf@92labs.ai">Zeeshan</a>.
-            Source code <a href='https://github.com/mzeeshanaltaf/ml-multiple-disease-predictor'>here</a>.</div> 
-        </div>
+    <style>
+    /* Ensures the footer stays at the bottom of the sidebar */
+    [data-testid="stSidebar"] > div: nth-child(3) {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer {
+        color: grey;
+        font-size: 15px;
+        text-align: center;
+        background-color: transparent;
+    }
+    </style>
+    <div class="footer">
+    Made with ❤️ by <a href="mailto:zeeshan.altaf@92labs.ai">Zeeshan</a>.
+    Source code <a href="https://github.com/mzeeshanaltaf/ml-multiple-disease-predictor">here</a>
+    </div>
     """
-    st.markdown(footer, unsafe_allow_html=True)
+    st.sidebar.markdown(footer, unsafe_allow_html=True)

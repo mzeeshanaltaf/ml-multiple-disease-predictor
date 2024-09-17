@@ -27,12 +27,17 @@ st.info('Dataset for the diseases taken from Kaggle. Check the About section in 
 
 # Configure sidebar
 with st.sidebar:
+    # Display Disclaimer
+    display_disclaimer()
     # Model selection option
     st.subheader('Select Machine Learning Model')
     st.session_state.model_name = st.selectbox('Select the Model', supported_models, label_visibility="collapsed")
 
     # About section
     about_app()
+
+    # Footer
+    display_footer()
 
 # ---- NAVIGATION MENU -----
 selection = option_menu(
@@ -134,8 +139,6 @@ if selection == "Kidney":
     # Display Confusion Matrix
     display_confusion_matrix(cm)
 
-# Display disclaimer
-display_disclaimer()
 
-# Display footer
-display_footer()
+
+
